@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mia Studio — AI Image Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;
+  --border:#ffffff0f;--border2:#ffffff18;
+  --text:#f0f0f8;--text2:#8888aa;--text3:#4a4a66;
+  --accent:#7c6dfa;--accent2:#a594ff;--glow:#7c6dfa33;
+  --success:#4ade80;--error:#f87171;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+button{cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* LAYOUT */
+.app{display:flex;height:100vh}
+.sidebar{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 12px;gap:4px}
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column}
+
+/* LOGO */
+.logo{font-family:'Syne',sans-serif;font-size:21px;font-weight:800;padding:4px 8px 20px;letter-spacing:-0.5px}
+.logo span{color:var(--accent)}
+
+/* NAV */
+.nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;font-size:13.5px;color:var(--text2);background:transparent;border:none;width:100%;text-align:left;transition:all .15s}
+.nav-btn:hover{background:var(--bg3);color:var(--text)}
+.nav-btn.active{background:var(--glow);color:var(--accent2)}
+.nav-btn.dim{opacity:.4;pointer-events:none}
+.nav-icon{width:18px;text-align:center;font-size:15px}
+.soon{font-size:10px;background:var(--bg3);color:var(--text3);padding:2px 6px;border-radius:6px;margin-left:4px}
+
+/* SIDEBAR BOTTOM */
+.sb-bottom{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid var(--border)}
+.mode-pill{display:flex;align-items:center;gap:7px;padding:7px 12px;border-radius:100px;font-size:12px;font-weight:500;margin-bottom:4px}
+.mode-pill.demo{background:#f59e0b11;color:#f59e0b}
+.mode-pill.live{background:#4ade8011;color:#4ade80}
+.mode-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.usage{font-size:11px;color:var(--text3);padding:2px 10px 4px}
+
+/* GENERATE LAYOUT */
+.gen-layout{display:flex;height:100%;overflow:hidden}
+.controls{width:340px;min-width:340px;padding:24px 20px;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+.controls::-webkit-scrollbar{width:4px}
+.controls::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-top:6px}
+
+/* PROMPT */
+.prompt{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);resize:none;outline:none;line-height:1.6;transition:border-color .2s}
+.prompt:focus{border-color:var(--accent)}
+.prompt::placeholder{color:var(--text3)}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 12px;border-radius:100px;font-size:12.5px;border:1px solid var(--border2);background:transparent;color:var(--text2);transition:all .15s}
+.chip:hover{border-color:var(--accent);color:var(--accent2)}
+.chip.on{background:var(--glow);border-color:var(--accent);color:var(--accent2)}
+.chip.dashed{border-style:dashed}
+
+/* STYLE GRID */
+.style-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.style-btn{padding:8px 4px;border-radius:8px;font-size:12px;border:1px solid var(--border2);background:transparent;color:var(--text2);transition:all .15s;text-align:center}
+.style-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.style-btn.on{background:var(--glow);border-color:var(--accent);color:var(--accent2)}
+
+/* RATIO */
+.ratios{display:flex;gap:6px;flex-wrap:wrap}
+.ratio-btn{padding:6px 12px;border-radius:8px;font-size:12px;border:1px solid var(--border2);background:transparent;color:var(--text2);transition:all .15s}
+.ratio-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.ratio-btn.on{background:var(--glow);border-color:var(--accent);color:var(--accent2)}
+
+/* GENERATE BTN */
+.gen-btn{width:100%;padding:14px;border-radius:12px;background:var(--accent);color:white;font-size:15px;font-family:'Syne',sans-serif;font-weight:700;border:none;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px}
+.gen-btn:hover:not(:disabled){background:var(--accent2);transform:translateY(-1px);box-shadow:0 8px 24px var(--glow)}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.dots{display:flex;gap:5px;align-items:center}
+.dots span{width:7px;height:7px;border-radius:50%;background:white;animation:dp 1s infinite}
+.dots span:nth-child(2){animation-delay:.15s}
+.dots span:nth-child(3){animation-delay:.3s}
+@keyframes dp{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+/* DEMO BANNER */
+.demo-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;background:#f59e0b11;border:1px solid #f59e0b22;font-size:12.5px;color:#f59e0b}
+.demo-bar button{background:none;border:none;color:#f59e0b;text-decoration:underline;font-size:12.5px;padding:0}
+
+/* OUTPUT */
+.output{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.out-header{display:flex;align-items:center;justify-content:space-between}
+.char-badge{font-size:12px;padding:4px 12px;border-radius:100px;background:var(--glow);color:var(--accent2);border:1px solid #7c6dfa44}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.img-slot{aspect-ratio:1;border-radius:14px;background:var(--bg3);border:1px solid var(--border);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.img-slot.loaded{border-color:transparent}
+.img-slot.loaded:hover{border-color:#7c6dfa44}
+.img-slot img{width:100%;height:100%;object-fit:cover;display:block}
+.img-hover{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity .2s}
+.img-slot:hover .img-hover{opacity:1}
+.img-hover button,.img-hover a{padding:8px 16px;border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.img-hover button{background:rgba(255,255,255,.15);color:white;border:1px solid rgba(255,255,255,.2)}
+.img-hover a{background:var(--accent);color:white;border:none}
+.img-hover button:hover{background:rgba(255,255,255,.25)}
+.spinner{display:flex;gap:6px}
+.spinner span{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:dp 1.2s infinite}
+.spinner span:nth-child(2){animation-delay:.2s}
+.spinner span:nth-child(3){animation-delay:.4s}
+.empty-slot{display:flex;flex-direction:column;align-items:center;gap:6px}
+.empty-slot .icon{font-size:24px;color:var(--text3)}
+.empty-slot .num{font-size:12px;color:var(--text3)}
+
+/* TABS */
+.tab{padding:28px 32px;overflow-y:auto;height:100%}
+.tab-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.tab-head h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800}
+.badge{font-size:13px;color:var(--text3);background:var(--bg3);padding:4px 12px;border-radius:100px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:80px 20px;text-align:center}
+.empty .eicon{font-size:40px;color:var(--text3)}
+.empty p{font-size:16px;color:var(--text2)}
+.empty .esub{font-size:13px;color:var(--text3)}
+
+/* LIBRARY */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.lib-item{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:1;background:var(--bg3)}
+.lib-item img{width:100%;height:100%;object-fit:cover;display:block}
+.lib-hover{position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.85));padding:14px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;opacity:0;transition:opacity .2s}
+.lib-item:hover .lib-hover{opacity:1}
+.lib-prompt{font-size:12px;color:rgba(255,255,255,.8);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.lib-char{font-size:11px;color:var(--accent2)}
+.lib-actions{display:flex;gap:6px}
+.lib-actions a,.lib-actions button{flex:1;padding:6px;border-radius:6px;text-align:center;font-size:13px;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .15s}
+.lib-actions a{background:var(--accent);color:white;border:none;display:flex;align-items:center;justify-content:center}
+.lib-actions button{background:rgba(255,255,255,.1);color:white;border:1px solid rgba(255,255,255,.2)}
+
+/* CHARACTERS */
+.char-list{display:flex;flex-direction:column;gap:10px}
+.char-card{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;border:1px solid var(--border);background:var(--bg2)}
+.char-av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;flex-shrink:0}
+.char-info{flex:1;min-width:0}
+.char-name{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
+.char-desc{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.char-acts{display:flex;gap:6px}
+.use-btn{padding:6px 14px;border-radius:8px;background:var(--glow);color:var(--accent2);border:1px solid #7c6dfa44;font-size:13px;transition:all .15s}
+.use-btn:hover{background:var(--accent);color:white}
+.del-btn{padding:6px 10px;border-radius:8px;background:transparent;color:var(--text3);border:1px solid var(--border);font-size:13px;transition:all .15s}
+.del-btn:hover{color:var(--error);border-color:#f8717144}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;z-index:500}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;padding:36px;width:440px;display:flex;flex-direction:column;gap:14px}
+.modal-icon{font-size:28px}
+.modal h2{font-family:'Syne',sans-serif;font-size:22px;font-weight:700}
+.modal p{font-size:14px;color:var(--text2);line-height:1.6}
+.modal input,.modal textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;width:100%;transition:border-color .2s}
+.modal input:focus,.modal textarea:focus{border-color:var(--accent)}
+.modal textarea{resize:none}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end}
+.btn-p{background:var(--accent);color:white;border:none;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:500;transition:all .2s}
+.btn-p:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-p.sm{padding:7px 14px;font-size:13px}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border2);border-radius:10px;padding:10px 20px;font-size:14px;transition:all .2s}
+.btn-g:hover{color:var(--text)}
+
+/* NOTIFICATION */
+.notif{position:fixed;top:20px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:100px;font-size:13px;z-index:1000;animation:sld .3s ease;backdrop-filter:blur(12px);pointer-events:none}
+.notif.ok{background:#4ade8022;border:1px solid #4ade8044;color:#4ade80}
+.notif.err{background:#f8717122;border:1px solid #f8717144;color:#f87171}
+@keyframes sld{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- NOTIFICATION -->
+  <div class="notif ok" id="notif" style="display:none"></div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="overlay" id="settingsModal" style="display:none" onclick="closeSettings(event)">
+    <div class="modal">
+      <div class="modal-icon">⚡</div>
+      <h2>Connect Replicate</h2>
+      <p>Paste your MiniMax API key to generate images. Get one at <strong>platform.minimax.io</strong> — requires $20/mo plan for image generation.</p>
+      <input type="password" id="apiInput" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" onkeydown="if(event.key==='Enter')saveKey()"/>
+      <div class="modal-btns">
+        <button class="btn-g" onclick="document.getElementById('settingsModal').style.display='none'">Cancel</button>
+        <button class="btn-p" onclick="saveKey()">Save & Go Live</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD CHARACTER MODAL -->
+  <div class="overlay" id="charModal" style="display:none" onclick="closeCharModal(event)">
+    <div class="modal">
+      <div class="modal-icon">🔒</div>
+      <h2>Create Character</h2>
+      <p>Describe your character in detail. Mia Studio will lock their appearance across all generations.</p>
+      <input type="text" id="charName" placeholder="Character name (e.g. Mia Reyes)"/>
+      <textarea id="charDesc" rows="4" placeholder="Beautiful Latina woman, 24 years old, warm golden-brown skin, long dark wavy hair, dark brown almond eyes, full lips, high cheekbones, athletic and feminine figure..."></textarea>
+      <div class="modal-btns">
+        <button class="btn-g" onclick="document.getElementById('charModal').style.display='none'">Cancel</button>
+        <button class="btn-p" onclick="saveChar()">Lock Character</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo"><span>M</span>ia Studio</div>
+    <nav class="nav">
+      <button class="nav-btn active" id="nb-generate" onclick="showTab('generate')"><span class="nav-icon">◈</span> Generate</button>
+      <button class="nav-btn" id="nb-library" onclick="showTab('library')"><span class="nav-icon">▦</span> Library</button>
+      <button class="nav-btn" id="nb-characters" onclick="showTab('characters')"><span class="nav-icon">⊛</span> Characters</button>
+      <button class="nav-btn dim"><span class="nav-icon">▷</span> Video <span class="soon">soon</span></button>
+    </nav>
+    <div class="sb-bottom">
+      <div class="mode-pill demo" id="modePill"><span class="mode-dot"></span> <span id="modeText">Demo mode</span></div>
+      <button class="nav-btn" onclick="openSettings()"><span class="nav-icon">⚙</span> Settings</button>
+      <div class="usage">Free plan · 30 imgs/mo</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- GENERATE TAB -->
+    <div id="tab-generate" class="gen-layout">
+      <div class="controls">
+        <div class="label">Describe your image</div>
+        <textarea class="prompt" id="prompt" rows="5" placeholder="Mia walking through golden hour sunlight in downtown Austin, confident stride, cinematic..."></textarea>
+
+        <div class="label">Character lock</div>
+        <div class="chips" id="charChips">
+          <button class="chip on" id="chip-none" onclick="selectChar(null)">None</button>
+        </div>
+
+        <div class="label">Style</div>
+        <div class="style-grid" id="styleGrid"></div>
+
+        <div class="label">Aspect ratio</div>
+        <div class="ratios" id="ratioRow"></div>
+
+        <button class="gen-btn" id="genBtn" onclick="generate()">
+          Generate 4 images
+        </button>
+
+        <div class="demo-bar" id="demoBanner">
+          <span>⚡</span>
+          <span>Demo mode — <button onclick="openSettings()">Add MiniMax key</button> for real images</span>
+        </div>
+      </div>
+
+      <div class="output">
+        <div class="out-header">
+          <div class="label" style="margin:0">Output</div>
+          <div class="char-badge" id="charBadge" style="display:none"></div>
+        </div>
+        <div class="img-grid" id="imgGrid">
+          <div class="img-slot"><div class="empty-slot"><div class="icon">◈</div><div class="num">1</div></div></div>
+          <div class="img-slot"><div class="empty-slot"><div class="icon">◈</div><div class="num">2</div></div></div>
+          <div class="img-slot"><div class="empty-slot"><div class="icon">◈</div><div class="num">3</div></div></div>
+          <div class="img-slot"><div class="empty-slot"><div class="icon">◈</div><div class="num">4</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY TAB -->
+    <div id="tab-library" class="tab" style="display:none">
+      <div class="tab-head">
+        <h1>My Library</h1>
+        <span class="badge" id="libCount">0 images</span>
+      </div>
+      <div id="libEmpty" class="empty">
+        <div class="eicon">▦</div>
+        <p>No saved images yet</p>
+        <p class="esub">Generate images and click ♡ Save to build your library</p>
+      </div>
+      <div class="lib-grid" id="libGrid" style="display:none"></div>
+    </div>
+
+    <!-- CHARACTERS TAB -->
+    <div id="tab-characters" class="tab" style="display:none">
+      <div class="tab-head">
+        <h1>Characters</h1>
+        <button class="btn-p sm" onclick="document.getElementById('charModal').style.display='flex'">+ New character</button>
+      </div>
+      <div id="charEmpty" class="empty">
+        <div class="eicon">⊛</div>
+        <p>No characters yet</p>
+        <p class="esub">Create a character to lock their appearance across all generations</p>
+        <br/>
+        <button class="btn-p" onclick="document.getElementById('charModal').style.display='flex'">Create your first character</button>
+      </div>
+      <div class="char-list" id="charList" style="display:none"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const DEMO_IMGS = [
+  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&q=80",
+  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80",
+  "https://images.unsplash.com/photo-1504703395950-b89145a5425b?w=600&q=80",
+  "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&q=80",
+  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&q=80",
+  "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=600&q=80",
+  "https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=600&q=80",
+]
+const STYLES = ['Photorealistic','Cinematic','Editorial','Artistic','Fashion','Street']
+const RATIOS = ['1:1','4:5','9:16','16:9','3:2']
+const CHAR_COLORS = [
+  {bg:'#1a1a2e',text:'#e0aaff'},{bg:'#0d1f2d',text:'#7ec8e3'},
+  {bg:'#1a2e1a',text:'#a8e6a3'},{bg:'#2e1a1a',text:'#e6a3a3'},{bg:'#2e2a1a',text:'#e6d5a3'}
+]
+
+let apiKey = localStorage.getItem('replicate_key') || ''
+let miaFaceUrl = localStorage.getItem('mia_face_url') || ''
+let style = 'Photorealistic'
+let ratio = '1:1'
+let selectedChar = null
+let characters = JSON.parse(localStorage.getItem('mia_chars') || '[]')
+let library = JSON.parse(localStorage.getItem('mia_library') || '[]')
+let generating = false
+let demoIdx = 0
+let currentPrompt = ''
+
+// FACE LOCK
+function lockFace(input) {
+  const file = input.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = function(e) {
+    miaFaceUrl = e.target.result
+    localStorage.setItem('mia_face_url', miaFaceUrl)
+    updateFaceUI()
+    notify('Face locked! All generations will use this reference ✓')
+  }
+  reader.readAsDataURL(file)
+}
+
+function clearFace() {
+  miaFaceUrl = ''
+  localStorage.removeItem('mia_face_url')
+  document.getElementById('faceUpload').value = ''
+  updateFaceUI()
+  notify('Face lock removed')
+}
+
+function updateFaceUI() {
+  const badge = document.getElementById('faceLockBadge')
+  const preview = document.getElementById('facePreview')
+  const previewImg = document.getElementById('facePreviewImg')
+  const clearBtn = document.getElementById('clearFaceBtn')
+  const label = document.getElementById('faceUploadLabel')
+  if (miaFaceUrl) {
+    badge.style.display = 'inline-block'
+    preview.style.display = 'block'
+    previewImg.src = miaFaceUrl
+    clearBtn.style.display = 'block'
+    label.style.display = 'none'
+  } else {
+    badge.style.display = 'none'
+    preview.style.display = 'none'
+    clearBtn.style.display = 'none'
+    label.style.display = 'block'
+  }
+}
+
+// INIT
+function init() {
+  // Build style grid
+  const sg = document.getElementById('styleGrid')
+  STYLES.forEach(s => {
+    const b = document.createElement('button')
+    b.className = 'style-btn' + (s === style ? ' on' : '')
+    b.textContent = s
+    b.onclick = () => { style = s; document.querySelectorAll('.style-btn').forEach(x => x.classList.remove('on')); b.classList.add('on') }
+    sg.appendChild(b)
+  })
+  // Build ratio row
+  const rr = document.getElementById('ratioRow')
+  RATIOS.forEach(r => {
+    const b = document.createElement('button')
+    b.className = 'ratio-btn' + (r === ratio ? ' on' : '')
+    b.textContent = r
+    b.onclick = () => { ratio = r; document.querySelectorAll('.ratio-btn').forEach(x => x.classList.remove('on')); b.classList.add('on') }
+    rr.appendChild(b)
+  })
+  updateMode()
+  updateFaceUI()
+  renderCharChips()
+  renderCharList()
+  renderLibrary()
+}
+
+function notify(msg, type='ok') {
+  const el = document.getElementById('notif')
+  el.textContent = msg
+  el.className = `notif ${type}`
+  el.style.display = 'block'
+  setTimeout(() => el.style.display = 'none', 3000)
+}
+
+function updateMode() {
+  const pill = document.getElementById('modePill')
+  const txt = document.getElementById('modeText')
+  const banner = document.getElementById('demoBanner')
+  if (apiKey) {
+    pill.className = 'mode-pill live'
+    txt.textContent = 'Live mode'
+    banner.style.display = 'none'
+  } else {
+    pill.className = 'mode-pill demo'
+    txt.textContent = 'Demo mode'
+    banner.style.display = 'flex'
+  }
+}
+
+function showTab(t) {
+  ['generate','library','characters'].forEach(id => {
+    document.getElementById('tab-'+id).style.display = id===t ? (id==='generate'?'flex':'block') : 'none'
+    document.getElementById('nb-'+id).classList.toggle('active', id===t)
+  })
+  if (t==='library') renderLibrary()
+  if (t==='characters') renderCharList()
+}
+
+function openSettings() {
+  document.getElementById('apiInput').value = apiKey
+  document.getElementById('settingsModal').style.display = 'flex'
+}
+function closeSettings(e) { if (e.target.classList.contains('overlay')) document.getElementById('settingsModal').style.display='none' }
+function closeCharModal(e) { if (e.target.classList.contains('overlay')) document.getElementById('charModal').style.display='none' }
+
+function saveKey() {
+  apiKey = document.getElementById('apiInput').value.trim()
+  localStorage.setItem('replicate_key', apiKey)
+  document.getElementById('settingsModal').style.display = 'none'
+  updateMode()
+  notify('API key saved! Live mode activated ✓')
+}
+
+function selectChar(c) {
+  selectedChar = c
+  renderCharChips()
+  const badge = document.getElementById('charBadge')
+  if (c) { badge.textContent = '🔒 ' + c.name; badge.style.display='block' }
+  else badge.style.display='none'
+}
+
+function renderCharChips() {
+  const container = document.getElementById('charChips')
+  container.innerHTML = ''
+  // None chip
+  const none = document.createElement('button')
+  none.className = 'chip' + (!selectedChar ? ' on' : '')
+  none.textContent = 'None'
+  none.onclick = () => selectChar(null)
+  container.appendChild(none)
+  // Character chips
+  characters.forEach((c,i) => {
+    const chip = document.createElement('button')
+    chip.className = 'chip' + (selectedChar?.id===c.id ? ' on' : '')
+    chip.textContent = '🔒 ' + c.name
+    if (selectedChar?.id===c.id) {
+      chip.style.background = CHAR_COLORS[i%CHAR_COLORS.length].bg
+      chip.style.color = CHAR_COLORS[i%CHAR_COLORS.length].text
+      chip.style.borderColor = CHAR_COLORS[i%CHAR_COLORS.length].text
+    }
+    chip.onclick = () => selectChar(selectedChar?.id===c.id ? null : c)
+    container.appendChild(chip)
+  })
+  // Add chip
+  const add = document.createElement('button')
+  add.className = 'chip dashed'
+  add.textContent = '+ New'
+  add.onclick = () => document.getElementById('charModal').style.display='flex'
+  container.appendChild(add)
+}
+
+function saveChar() {
+  const name = document.getElementById('charName').value.trim()
+  const desc = document.getElementById('charDesc').value.trim()
+  if (!name || !desc) return
+  characters.push({ id: Date.now(), name, desc })
+  localStorage.setItem('mia_chars', JSON.stringify(characters))
+  document.getElementById('charName').value = ''
+  document.getElementById('charDesc').value = ''
+  document.getElementById('charModal').style.display = 'none'
+  renderCharChips()
+  renderCharList()
+  notify(`"${name}" locked in ✓`)
+}
+
+function renderCharList() {
+  const empty = document.getElementById('charEmpty')
+  const list = document.getElementById('charList')
+  if (characters.length === 0) { empty.style.display='flex'; list.style.display='none'; return }
+  empty.style.display='none'; list.style.display='flex'
+  list.innerHTML = ''
+  characters.forEach((c,i) => {
+    const col = CHAR_COLORS[i%CHAR_COLORS.length]
+    const card = document.createElement('div')
+    card.className = 'char-card'
+    card.style.borderColor = col.text + '44'
+    card.innerHTML = `
+      <div class="char-av" style="background:${col.bg};color:${col.text}">${c.name.slice(0,2).toUpperCase()}</div>
+      <div class="char-info"><div class="char-name">${c.name}</div><div class="char-desc">${c.desc}</div></div>
+      <div class="char-acts">
+        <button class="use-btn" onclick="selectChar(characters[${i}]);showTab('generate')">Use</button>
+        <button class="del-btn" onclick="deleteChar(${c.id})">✕</button>
+      </div>`
+    list.appendChild(card)
+  })
+}
+
+function deleteChar(id) {
+  characters = characters.filter(c => c.id !== id)
+  localStorage.setItem('mia_chars', JSON.stringify(characters))
+  if (selectedChar?.id === id) selectChar(null)
+  renderCharChips()
+  renderCharList()
+}
+
+function setGridSpinning() {
+  const grid = document.getElementById('imgGrid')
+  grid.innerHTML = ''
+  for (let i=0;i<4;i++) {
+    const slot = document.createElement('div')
+    slot.className = 'img-slot'
+    slot.innerHTML = '<div class="spinner"><span></span><span></span><span></span></div>'
+    grid.appendChild(slot)
+  }
+}
+
+function setGridImages(urls) {
+  const grid = document.getElementById('imgGrid')
+  grid.innerHTML = ''
+  urls.forEach((url,i) => {
+    const slot = document.createElement('div')
+    slot.className = 'img-slot loaded'
+    slot.innerHTML = `
+      <img src="${url}" alt="Generated ${i+1}" loading="lazy"/>
+      <div class="img-hover">
+        <button onclick="saveToLibrary('${url}')">♡ Save</button>
+        <a href="${url}" download="mia-${Date.now()}.jpg">↓ Download</a>
+      </div>`
+    grid.appendChild(slot)
+  })
+}
+
+function saveToLibrary(url) {
+  const p = document.getElementById('prompt').value.trim()
+  library.unshift({ id: Date.now(), url, prompt: p, char: selectedChar?.name || null, style })
+  localStorage.setItem('mia_library', JSON.stringify(library))
+  notify('Saved to library ✓')
+}
+
+function renderLibrary() {
+  const empty = document.getElementById('libEmpty')
+  const grid = document.getElementById('libGrid')
+  document.getElementById('libCount').textContent = library.length + ' images'
+  if (library.length === 0) { empty.style.display='flex'; grid.style.display='none'; return }
+  empty.style.display='none'; grid.style.display='grid'
+  grid.innerHTML = ''
+  library.forEach(item => {
+    const el = document.createElement('div')
+    el.className = 'lib-item'
+    el.innerHTML = `
+      <img src="${item.url}" alt="${item.prompt}" loading="lazy"/>
+      <div class="lib-hover">
+        <div class="lib-prompt">${item.prompt}</div>
+        ${item.char ? `<div class="lib-char">🔒 ${item.char}</div>` : ''}
+        <div class="lib-actions">
+          <a href="${item.url}" download>↓</a>
+          <button onclick="removeFromLib(${item.id})">✕</button>
+        </div>
+      </div>`
+    grid.appendChild(el)
+  })
+}
+
+function removeFromLib(id) {
+  library = library.filter(l => l.id !== id)
+  localStorage.setItem('mia_library', JSON.stringify(library))
+  renderLibrary()
+}
+
+async function generate() {
+  const prompt = document.getElementById('prompt').value.trim()
+  if (!prompt || generating) return
+  generating = true
+  currentPrompt = prompt
+  const btn = document.getElementById('genBtn')
+  btn.disabled = true
+  btn.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>'
+  setGridSpinning()
+
+  if (!apiKey) {
+    await new Promise(r => setTimeout(r, 2000))
+    const picks = [0,1,2,3].map(i => DEMO_IMGS[(demoIdx+i)%DEMO_IMGS.length])
+    demoIdx = (demoIdx+4)%DEMO_IMGS.length
+    setGridImages(picks)
+  } else {
+    try {
+      const charContext = selectedChar ? selectedChar.desc + ', ' : ''
+      const stylePrompts = {
+        'Photorealistic': 'candid iphone photo, natural light, real life, no filters, slightly imperfect, authentic',
+        'Cinematic': 'cinematic shot, moody atmospheric lighting, film grain, movie still',
+        'Editorial': 'editorial fashion, studio lighting, magazine quality, high fashion',
+        'Artistic': 'artistic composition, vibrant colors, creative framing',
+        'Fashion': 'fashion photography, stylish outfit, trendy, lifestyle',
+        'Street': 'street photography, urban environment, candid, documentary'
+      }
+      const styleSuffix = stylePrompts[style] || stylePrompts['Photorealistic']
+      const fullPrompt = `${charContext}${prompt}, ${styleSuffix}`
+      
+      // Call function 4 times, fill each slot as it arrives
+      const grid = document.getElementById('imgGrid')
+
+      async function fetchOne(slotIndex) {
+        const res = await fetch('/.netlify/functions/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: fullPrompt, apiKey, referenceImageUrl: miaFaceUrl || null })
+        })
+        const data = await res.json()
+        if (data.error) throw new Error(data.error)
+
+        // Get URLs from output array (could be base64 data URLs or regular URLs)
+        const urls = Array.isArray(data.output) ? data.output : []
+        const url = urls[0]
+        if (!url) throw new Error('No image returned')
+
+        // Fill this slot immediately when ready
+        const slots = grid.querySelectorAll('.img-slot')
+        if (slots[slotIndex]) {
+          slots[slotIndex].className = 'img-slot loaded'
+          slots[slotIndex].innerHTML = `
+            <img src="${url}" alt="Generated ${slotIndex + 1}" loading="lazy"/>
+            <div class="img-hover">
+              <button onclick="saveToLibrary('${url}')">♡ Save</button>
+              <a href="${url}" download="mia-${Date.now()}.jpg">↓ Download</a>
+            </div>`
+        }
+        return url
+      }
+
+      const results = await Promise.allSettled([fetchOne(0), fetchOne(1), fetchOne(2), fetchOne(3)])
+      const succeeded = results.filter(r => r.status === 'fulfilled').length
+      if (succeeded === 0) throw new Error('All generations failed')
+    } catch(e) {
+      notify('Generation failed: ' + e.message, 'err')
+      document.getElementById('imgGrid').innerHTML = `
+        <div style="grid-column:span 2;padding:40px;text-align:center;color:var(--text2);font-size:14px">
+          Generation failed.<br/>Check your API key in Settings.
+        </div>`
+    }
+  }
+
+  generating = false
+  btn.disabled = false
+  btn.innerHTML = 'Generate 4 images'
+}
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => { if ((e.metaKey||e.ctrlKey) && e.key==='Enter') generate() })
+
+init()
+</script>
+</body>
+</html>
