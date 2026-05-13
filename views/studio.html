@@ -324,7 +324,16 @@ function getApiKey() {
 
 function notify(msg,type='ok'){const el=document.getElementById('notif');el.textContent=msg;el.className=`notif ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000)}
 function updateMode(){const live=!!apiKey;document.getElementById('modePill').className='mode-pill '+(live?'live':'demo');document.getElementById('modeText').textContent=live?'Live mode':'Demo mode';document.getElementById('demoBanner').style.display=live?'none':'flex'}
-function openSettings(){document.getElementById('apiInput').value=apiKey;document.getElementById('settingsModal').style.display='flex'}
+function openSettings(){
+  // Load current keys from server into modal
+  fetch('/api/me').then(r=>r.json()).then(user=>{
+    const mk = document.getElementById('minimaxKeyInput')
+    const nk = document.getElementById('novitaKeyInput')
+    if(mk) mk.value = user.minimax_key || ''
+    if(nk) nk.value = user.novita_key || ''
+  }).catch(()=>{})
+  document.getElementById('settingsModal').style.display='flex'
+}
 function closeModal(id){document.getElementById(id).style.display='none'}
 async function saveKey(){
   const minimaxKey = document.getElementById('minimaxKeyInput')?.value?.trim() || ''
