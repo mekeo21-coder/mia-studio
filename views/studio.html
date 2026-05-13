@@ -188,12 +188,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
           <option value="novita">NovitaAI — Uncensored SD (adult)</option>
           <option value="custom">Custom model...</option>
         </select>
-        <div class="model-config" id="modelConfig" style="display:none">
-          <label>API Key for selected model</label>
-          <input type="password" id="modelApiKey" placeholder="Paste API key..." onchange="saveModelKey()"/>
-          <label id="modelEndpointLabel" style="display:none">Custom endpoint URL</label>
-          <input type="text" id="modelEndpoint" placeholder="https://api.example.com/generate" style="display:none" onchange="saveModelKey()"/>
-        </div>
+        <div style="font-size:11px;color:var(--text3);padding:6px 2px;">API keys are managed in ⚙ Settings</div>
 
         <div id="demoBanner" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;background:#f59e0b11;border:1px solid #f59e0b22;font-size:12px;color:#f59e0b">
           ⚡ Demo mode — <button onclick="openSettings()" style="background:none;border:none;color:#f59e0b;text-decoration:underline;font-size:12px;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif">Add MiniMax key</button>
@@ -323,8 +318,8 @@ function saveModelKey() {
 }
 
 function getApiKey() {
-  const m = MODELS[currentModel]
-  return localStorage.getItem(m.keyName) || ''
+  // Keys are stored server-side, return placeholder to indicate live mode
+  return apiKey || 'server-side'
 }
 
 function notify(msg,type='ok'){const el=document.getElementById('notif');el.textContent=msg;el.className=`notif ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000)}
@@ -359,7 +354,7 @@ async function callMiniMax(prompt){
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({prompt, model: currentModel, ratio, faceUrl: miaFace || ''})
+      body: JSON.stringify({prompt, model: currentModel, ratio, faceUrl: miaFace || '', aspectRatio: ratio})
     })
     const data = await res.json()
     if (data.error) throw new Error(data.error)
