@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sign In — Mia Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;--border:#ffffff18;--text:#f0f0f8;--text2:#8888aa;--accent:#7c6dfa;--accent2:#a594ff;--red:#f87171;--green:#4ade80}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:40px;width:400px}
+.logo{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;text-align:center;margin-bottom:8px}.logo span{color:var(--accent)}
+.subtitle{text-align:center;color:var(--text2);font-size:14px;margin-bottom:32px}
+label{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:6px}
+input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;margin-bottom:16px;transition:border-color .2s}
+input:focus{border-color:var(--accent)}
+.btn{width:100%;padding:13px;border-radius:10px;background:var(--accent);color:white;font-size:15px;font-family:'Syne',sans-serif;font-weight:700;border:none;cursor:pointer;transition:all .2s;margin-top:4px}
+.btn:hover{background:var(--accent2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.error{background:#f8717122;border:1px solid #f8717144;color:var(--red);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none}
+.back{display:block;text-align:center;margin-top:20px;color:var(--text2);font-size:13px;text-decoration:none}
+.back:hover{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo"><span>M</span>ia Studio</div>
+  <div class="subtitle">Sign in to your account</div>
+  <div class="error" id="error"></div>
+  <label>Email</label>
+  <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+  <label>Password</label>
+  <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"/>
+  <button class="btn" id="btn" onclick="login()">Sign In</button>
+  <a class="back" href="/">← Back to home</a>
+</div>
+<script>
+async function login() {
+  const email = document.getElementById('email').value.trim()
+  const password = document.getElementById('password').value
+  const btn = document.getElementById('btn')
+  const error = document.getElementById('error')
+  if (!email || !password) { showError('Please enter email and password'); return }
+  btn.disabled = true
+  btn.textContent = 'Signing in...'
+  error.style.display = 'none'
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    })
+    const data = await res.json()
+    if (data.success) {
+      window.location.href = '/studio'
+    } else {
+      showError(data.error || 'Login failed')
+      btn.disabled = false
+      btn.textContent = 'Sign In'
+    }
+  } catch(e) {
+    showError('Connection error. Try again.')
+    btn.disabled = false
+    btn.textContent = 'Sign In'
+  }
+}
+function showError(msg) {
+  const el = document.getElementById('error')
+  el.textContent = msg
+  el.style.display = 'block'
+}
+</script>
+</body>
+</html>
