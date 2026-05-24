@@ -52,18 +52,15 @@ function requireAuth(req, res, next) {
 
 // ============ ROUTES ============
 
-// Landing page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'))
 })
 
-// Login page
 app.get('/login', (req, res) => {
   if (req.session.userId) return res.redirect('/studio')
   res.sendFile(path.join(__dirname, 'views', 'login.html'))
 })
 
-// Login POST
 app.post('/login', (req, res) => {
   const { email, password } = req.body
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email)
@@ -76,18 +73,15 @@ app.post('/login', (req, res) => {
   res.json({ success: true })
 })
 
-// Logout
 app.get('/logout', (req, res) => {
   req.session.destroy()
   res.redirect('/login')
 })
 
-// Studio (protected)
 app.get('/studio', requireAuth, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'studio.html'))
 })
 
-// Save API keys
 app.post('/api/keys', requireAuth, (req, res) => {
   const { minimax_key, novita_key } = req.body
   db.prepare('UPDATE users SET minimax_key = ?, novita_key = ? WHERE id = ?')
@@ -95,13 +89,12 @@ app.post('/api/keys', requireAuth, (req, res) => {
   res.json({ success: true })
 })
 
-// Get user info
 app.get('/api/me', requireAuth, (req, res) => {
   const user = db.prepare('SELECT email, plan, minimax_key, novita_key FROM users WHERE id = ?').get(req.session.userId)
   res.json(user)
 })
 
-// ============ IMAGE GENERATION PROXY ============
+// ============ IMAGE GENERATION ============
 
 app.post('/api/generate', requireAuth, async (req, res) => {
   const { prompt, model, ratio, faceUrl } = req.body
@@ -180,6 +173,101 @@ app.post('/api/generate', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('Generate error:', err.message)
     res.json({ error: err.message })
+  }
+})
+
+// ============ VIDEO FACE SWAP ============
+
+// Step 1 — Upload template video to NovitaAI, get video_assets_id
+app.post('/api/video-upload', requireAuth, async (req, res) => {
+  const { videoUrl } = req.body
+  const user = db.prepare('SELECT novita_key FROM users WHERE id = ?').get(req.session.userId)
+  const apiKey = user.novita_key
+  if (!apiKey) return res.json({ error: 'No NovitaAI key saved. Add it in Settings.' })
+
+  try {
+    // Fetch the video file
+    const videoRes = await fetch(videoUrl)
+    if (!videoRes.ok) throw new Error('Could not fetch template video')
+    const videoBuffer = await videoRes.buffer()
+    const base64Video = videoBuffer.toString('base64')
+    const mimeType = 'video/mp4'
+
+    // Upload to NovitaAI assets
+    const uploadRes = await fetch('https://api.novita.ai/v3/assets/video', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        video: `data:${mimeType};base64,${base64Video}`,
+        video_type: mimeType
+      })
+    })
+    const uploadData = await uploadRes.json()
+    if (!uploadData.video_assets_id) throw new Error(JSON.stringify(uploadData))
+    res.json({ video_assets_id: uploadData.video_assets_id })
+  } catch (err) {
+    console.error('Video upload error:', err.message)
+    res.json({ error: err.message })
+  }
+})
+
+// Step 2 — Start face swap task
+app.post('/api/video-faceswap', requireAuth, async (req, res) => {
+  const { video_assets_id, face_image_base64 } = req.body
+  const user = db.prepare('SELECT novita_key FROM users WHERE id = ?').get(req.session.userId)
+  const apiKey = user.novita_key
+  if (!apiKey) return res.json({ error: 'No NovitaAI key saved.' })
+
+  try {
+    const swapRes = await fetch('https://api.novita.ai/v3/async/video-merge-face', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        extra: { response_video_type: 'mp4' },
+        request: {
+          video_assets_id,
+          enable_restore: true,
+          face_image_base64
+        }
+      })
+    })
+    const swapData = await swapRes.json()
+    if (!swapData.task_id) throw new Error(JSON.stringify(swapData))
+    res.json({ task_id: swapData.task_id })
+  } catch (err) {
+    console.error('Face swap error:', err.message)
+    res.json({ error: err.message })
+  }
+})
+
+// Step 3 — Poll task result
+app.get('/api/video-result', requireAuth, async (req, res) => {
+  const { task_id } = req.query
+  const user = db.prepare('SELECT novita_key FROM users WHERE id = ?').get(req.session.userId)
+  const apiKey = user.novita_key
+  if (!apiKey) return res.json({ error: 'No NovitaAI key.' })
+
+  try {
+    const pollRes = await fetch(`https://api.novita.ai/v3/async/task-result?task_id=${task_id}`, {
+      headers: { 'Authorization': `Bearer ${apiKey}` }
+    })
+    const pollData = await pollRes.json()
+    const status = pollData.task?.status || 'TASK_STATUS_PENDING'
+
+    if (status === 'TASK_STATUS_SUCCEED') {
+      const videoUrl = pollData.videos?.[0]?.video_url || pollData.video_url
+      res.json({ status, video_url: videoUrl })
+    } else {
+      res.json({ status })
+    }
+  } catch (err) {
+    res.json({ status: 'TASK_STATUS_FAILED', error: err.message })
   }
 })
 
