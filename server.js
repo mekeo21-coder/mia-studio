@@ -190,24 +190,21 @@ app.post('/api/video-upload', requireAuth, async (req, res) => {
     const videoRes = await fetch(videoUrl)
     if (!videoRes.ok) throw new Error('Could not fetch template video')
     const videoBuffer = await videoRes.buffer()
-    const base64Video = videoBuffer.toString('base64')
-    const mimeType = 'video/mp4'
 
-    // Upload to NovitaAI assets
-    const uploadRes = await fetch('https://api.novita.ai/v3/assets/video', {
-      method: 'POST',
+    // Upload to NovitaAI using PUT to assets endpoint (per official docs)
+    const uploadRes = await fetch('https://assets.novitai.com/video', {
+      method: 'PUT',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'video/mp4'
       },
-      body: JSON.stringify({
-        video: `data:${mimeType};base64,${base64Video}`,
-        video_type: mimeType
-      })
+      body: videoBuffer
     })
     const uploadData = await uploadRes.json()
-    if (!uploadData.video_assets_id) throw new Error(JSON.stringify(uploadData))
-    res.json({ video_assets_id: uploadData.video_assets_id })
+    // Response returns assets_id field
+    const video_assets_id = uploadData.assets_id
+    if (!video_assets_id) throw new Error('Upload failed: ' + JSON.stringify(uploadData))
+    res.json({ video_assets_id })
   } catch (err) {
     console.error('Video upload error:', err.message)
     res.json({ error: err.message })
@@ -261,7 +258,11 @@ app.get('/api/video-result', requireAuth, async (req, res) => {
     const status = pollData.task?.status || 'TASK_STATUS_PENDING'
 
     if (status === 'TASK_STATUS_SUCCEED') {
-      const videoUrl = pollData.videos?.[0]?.video_url || pollData.video_url
+      // Check multiple possible response fields
+      const videoUrl = pollData.videos?.[0]?.video_url 
+        || pollData.video_url 
+        || pollData.imgs?.[0]?.image_url
+        || pollData.data?.video_url
       res.json({ status, video_url: videoUrl })
     } else {
       res.json({ status })
