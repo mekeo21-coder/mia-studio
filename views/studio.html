@@ -42,7 +42,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .face-upload-area:hover{border-color:var(--accent);background:var(--glow)}
 .face-upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .face-preview{border-radius:10px;overflow:hidden;border:2px solid var(--green);position:relative}
-.face-preview img{width:100%;height:100px;object-fit:cover;object-position:top;display:block}
+.face-preview img{width:100%;height:180px;object-fit:cover;object-position:top center;display:block}
 .face-preview-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:5px 10px;display:flex;align-items:center;justify-content:space-between}
 .face-locked-txt{font-size:11px;color:var(--green)}
 .face-clear-btn{background:none;border:none;color:var(--text2);cursor:pointer;font-size:13px;padding:0}
@@ -66,8 +66,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .output{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
 .out-header{display:flex;align-items:center;justify-content:space-between}
 .face-badge{font-size:11px;padding:3px 10px;border-radius:100px;background:#4ade8022;color:#4ade80;border:1px solid #4ade8044}
-.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.img-slot{aspect-ratio:9/16;border-radius:12px;background:var(--bg3);border:1px solid var(--border);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.img-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.img-slot{height:220px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
 .img-slot.loaded{border-color:transparent}
 .img-slot img{width:100%;height:100%;object-fit:cover;display:block}
 .img-hover{position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;gap:8px;opacity:0;transition:opacity .2s}
@@ -117,24 +117,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 
 /* ── VIDEO TAB ── */
 .video-layout{display:flex;flex:1;overflow:hidden}
-.video-controls{width:320px;min-width:320px;padding:20px 16px;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.video-controls{width:320px;min-width:320px;padding:16px;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;gap:10px}
 .video-controls::-webkit-scrollbar{width:3px}
 .video-controls::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 .video-output{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
-.template-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.template-card{border-radius:10px;border:2px solid var(--border2);background:var(--bg3);cursor:pointer;overflow:hidden;transition:all .2s;position:relative}
-.template-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.template-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.template-card{border-radius:8px;border:2px solid var(--border2);background:var(--bg3);cursor:pointer;overflow:hidden;transition:all .2s;position:relative}
+.template-card:hover{border-color:var(--accent);transform:translateY(-1px)}
 .template-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
-.template-thumb{width:100%;aspect-ratio:9/16;object-fit:cover;display:block;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:32px}
-.template-thumb-emoji{width:100%;aspect-ratio:9/16;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,var(--bg2),var(--bg3))}
-.template-label{padding:7px 10px;font-size:11px;color:var(--text2);text-align:center;border-top:1px solid var(--border)}
-.template-selected-badge{position:absolute;top:6px;right:6px;background:var(--accent);color:white;border-radius:100px;font-size:9px;padding:2px 7px;font-weight:700}
+.template-thumb-emoji{width:100%;padding:10px 6px;display:flex;flex-direction:row;align-items:center;gap:8px;background:linear-gradient(135deg,var(--bg2),var(--bg3))}
+.template-label{padding:5px 8px;font-size:11px;color:var(--text2);border-top:1px solid var(--border);font-family:'DM Sans',sans-serif}
+.template-selected-badge{position:absolute;top:5px;right:5px;background:var(--accent);color:white;border-radius:100px;font-size:9px;padding:2px 6px;font-weight:700}
 .vid-face-area{border:1px dashed var(--border2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
 .vid-face-area:hover{border-color:var(--accent);background:var(--glow)}
 .vid-face-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .vid-face-preview{border-radius:10px;overflow:hidden;border:2px solid var(--green);position:relative}
-.vid-face-preview img{width:100%;height:90px;object-fit:cover;object-position:top;display:block}
-.vid-face-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:4px 10px;display:flex;align-items:center;justify-content:space-between}
+.vid-face-preview img{width:100%;height:252px;object-fit:cover;object-position:top center;display:block}
+.vid-face-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);padding:6px 10px;display:flex;align-items:center;justify-content:space-between}
 .progress-wrap{background:var(--bg3);border-radius:100px;height:6px;overflow:hidden;border:1px solid var(--border2)}
 .progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width .4s ease;width:0%}
 .progress-label{font-size:11px;color:var(--text2);text-align:center}
@@ -269,11 +268,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
             <div style="font-size:13px;color:var(--text2)">Upload face photo</div>
             <div style="font-size:11px;color:var(--text3);margin-top:2px">Clear, front-facing works best</div>
           </div>
-          <div id="vidFacePreview" style="display:none" class="vid-face-preview">
-            <img id="vidFaceImg"/>
+          <div id="vidFacePreview" style="display:none;" class="vid-face-preview">
+            <img id="vidFaceImg" src="" alt="Face preview"/>
             <div class="vid-face-bar">
               <span style="font-size:11px;color:var(--green)">✓ Face ready</span>
-              <button onclick="clearVidFace()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;">✕</button>
+              <button onclick="clearVidFace()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;">✕ Clear</button>
             </div>
           </div>
 
@@ -409,10 +408,12 @@ function renderTemplates(){
     card.onclick=()=>selectTemplate(t.id);
     card.innerHTML=`
       <div class="template-thumb-emoji" style="background:linear-gradient(135deg,${t.color}22,${t.color}11)">
-        <div style="font-size:36px">${t.emoji}</div>
-        <div style="font-size:10px;color:var(--text3)">${t.desc}</div>
+        <div style="font-size:24px;flex-shrink:0">${t.emoji}</div>
+        <div>
+          <div style="font-size:12px;color:var(--text);font-weight:500">${t.label.replace(/^[^\s]+\s/,'')}</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:1px">${t.desc}</div>
+        </div>
       </div>
-      <div class="template-label">${t.label}</div>
       ${selectedTemplate===t.id?'<div class="template-selected-badge">✓</div>':''}
     `;
     grid.appendChild(card);
