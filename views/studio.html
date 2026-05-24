@@ -66,8 +66,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .output{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
 .out-header{display:flex;align-items:center;justify-content:space-between}
 .face-badge{font-size:11px;padding:3px 10px;border-radius:100px;background:#4ade8022;color:#4ade80;border:1px solid #4ade8044}
-.img-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.img-slot{height:220px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.img-slot{height:396px;border-radius:10px;background:var(--bg3);border:1px solid var(--border);overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
 .img-slot.loaded{border-color:transparent}
 .img-slot img{width:100%;height:100%;object-fit:cover;display:block}
 .img-hover{position:absolute;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;gap:8px;opacity:0;transition:opacity .2s}
@@ -333,51 +333,50 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 const TEMPLATES = [
   {
     id: 'dance1',
-    label: '💃 Party Dance',
+    label: '💃 Girl Dance 1',
     emoji: '💃',
-    desc: 'Woman dancing at a party',
-    // We use a publicly accessible sample video URL
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', // placeholder — replace with real Pexels URLs
+    desc: 'Girl dancing — clip 1',
+    videoUrl: 'https://pub-e9b2b451998a44ec9476c0713bfd6e47.r2.dev/girl%20dance1.mp4',
     color: '#ff6b9d'
   },
   {
-    id: 'silly1',
-    label: '😂 Silly Walk',
-    emoji: '🚶',
-    desc: 'Funny silly walk',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    id: 'dance2',
+    label: '💃 Girl Dance 2',
+    emoji: '🕺',
+    desc: 'Girl dancing — clip 2',
+    videoUrl: 'https://pub-e9b2b451998a44ec9476c0713bfd6e47.r2.dev/girl%20dance2.mp4',
     color: '#f59e0b'
   },
   {
-    id: 'react1',
-    label: '😱 Shocked Reaction',
-    emoji: '😱',
-    desc: 'Dramatic shocked reaction',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    id: 'ttdance1',
+    label: '🎵 TikTok Dance 1',
+    emoji: '🎵',
+    desc: 'TikTok dance — clip 1',
+    videoUrl: 'https://pub-e9b2b451998a44ec9476c0713bfd6e47.r2.dev/girl%20tt%20dance1.mp4',
     color: '#7c6dfa'
   },
   {
-    id: 'dance2',
-    label: '🕺 TikTok Dance',
-    emoji: '🕺',
-    desc: 'Viral TikTok dance move',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    id: 'ttdance2',
+    label: '🎶 TikTok Dance 2',
+    emoji: '🎶',
+    desc: 'TikTok dance — clip 2',
+    videoUrl: 'https://pub-e9b2b451998a44ec9476c0713bfd6e47.r2.dev/girl%20tt%20dance2.mp4',
     color: '#4ade80'
   },
   {
-    id: 'laugh1',
-    label: '🤣 Laughing Fit',
-    emoji: '🤣',
-    desc: 'Can\'t stop laughing',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    id: 'shocked1',
+    label: '😱 Shocked Guy 1',
+    emoji: '😱',
+    desc: 'Guy shocked reaction 1',
+    videoUrl: 'https://pub-e9b2b451998a44ec9476c0713bfd6e47.r2.dev/guy%20shocked1.mp4',
     color: '#30c8f0'
   },
   {
-    id: 'run1',
-    label: '🏃 Running Late',
-    emoji: '🏃',
-    desc: 'Frantically running',
-    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    id: 'shocked2',
+    label: '🤯 Shocked Guy 2',
+    emoji: '🤯',
+    desc: 'Guy shocked reaction 2',
+    videoUrl: 'https://pub-e9b2b451998a44ec9476c0713bfd6e47.r2.dev/guy%20shocked2.mp4',
     color: '#f87171'
   },
 ];
