@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Mia Studio v5.0</title>
+<title>Mia Studio v5.1</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -22,7 +22,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .nav-btn{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:9px;font-size:13px;color:var(--text2);background:transparent;border:none;width:100%;text-align:left;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
 .nav-btn:hover{background:var(--bg3);color:var(--text)}
 .nav-btn.active{background:var(--glow);color:var(--accent2)}
-.nav-btn.dim{opacity:.4;pointer-events:none}
 .sb-bottom{margin-top:auto;display:flex;flex-direction:column;gap:3px;padding-top:12px;border-top:1px solid var(--border)}
 .mode-pill{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:100px;font-size:11px;font-weight:500;margin-bottom:3px}
 .mode-pill.live{background:#4ade8011;color:#4ade80}
@@ -115,15 +114,47 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
 .model-selector{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;cursor:pointer;transition:border-color .2s;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238888aa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
 .model-selector:focus{border-color:var(--accent)}
 .model-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 8px;border-radius:100px;background:var(--glow);color:var(--accent2);border:1px solid var(--accent)44}
-.model-config{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
-.model-config input{background:var(--bg);border:1px solid var(--border2);border-radius:7px;padding:8px 10px;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;width:100%}
-.model-config input:focus{border-color:var(--accent)}
-.model-config label{font-size:11px;color:var(--text3)}
+
+/* ── VIDEO TAB ── */
+.video-layout{display:flex;flex:1;overflow:hidden}
+.video-controls{width:320px;min-width:320px;padding:20px 16px;border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.video-controls::-webkit-scrollbar{width:3px}
+.video-controls::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.video-output{flex:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.template-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.template-card{border-radius:10px;border:2px solid var(--border2);background:var(--bg3);cursor:pointer;overflow:hidden;transition:all .2s;position:relative}
+.template-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.template-card.selected{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.template-thumb{width:100%;aspect-ratio:9/16;object-fit:cover;display:block;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:32px}
+.template-thumb-emoji{width:100%;aspect-ratio:9/16;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,var(--bg2),var(--bg3))}
+.template-label{padding:7px 10px;font-size:11px;color:var(--text2);text-align:center;border-top:1px solid var(--border)}
+.template-selected-badge{position:absolute;top:6px;right:6px;background:var(--accent);color:white;border-radius:100px;font-size:9px;padding:2px 7px;font-weight:700}
+.vid-face-area{border:1px dashed var(--border2);border-radius:10px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.vid-face-area:hover{border-color:var(--accent);background:var(--glow)}
+.vid-face-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.vid-face-preview{border-radius:10px;overflow:hidden;border:2px solid var(--green);position:relative}
+.vid-face-preview img{width:100%;height:90px;object-fit:cover;object-position:top;display:block}
+.vid-face-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.7);padding:4px 10px;display:flex;align-items:center;justify-content:space-between}
+.progress-wrap{background:var(--bg3);border-radius:100px;height:6px;overflow:hidden;border:1px solid var(--border2)}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;transition:width .4s ease;width:0%}
+.progress-label{font-size:11px;color:var(--text2);text-align:center}
+.video-result{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;overflow:hidden}
+.video-result video{width:100%;display:block;max-height:500px;object-fit:contain;background:#000}
+.video-result-bar{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
+.video-result-bar span{font-size:12px;color:var(--text2)}
+.video-result-bar a{padding:7px 16px;background:var(--accent);color:white;border-radius:8px;font-size:12px;text-decoration:none;font-family:'Syne',sans-serif;font-weight:700}
+.vid-placeholder{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--text3);font-size:13px;text-align:center;padding:40px}
+.vid-placeholder-icon{font-size:48px;opacity:.3}
+.step-badge{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--accent);color:white;font-size:10px;font-weight:700;flex-shrink:0}
+.step-row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)}
+.novita-note{font-size:11px;color:var(--text3);padding:8px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);line-height:1.6}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="notif ok" id="notif" style="display:none"></div>
+
+  <!-- SETTINGS MODAL -->
   <div class="overlay" id="settingsModal" style="display:none">
     <div class="modal">
       <div style="font-size:24px">⚙</div>
@@ -139,19 +170,23 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
       </div>
     </div>
   </div>
+
   <aside class="sidebar">
     <div class="logo"><span>M</span>ia Studio</div>
     <button class="nav-btn active" id="nb-gen" onclick="showTab('gen')">◈ Generate</button>
     <button class="nav-btn" id="nb-lib" onclick="showTab('lib')">▦ Library</button>
-    <button class="nav-btn dim">▷ Video <span style="font-size:9px;background:var(--bg3);color:var(--text3);padding:1px 5px;border-radius:5px;margin-left:3px">soon</span></button>
+    <button class="nav-btn" id="nb-vid" onclick="showTab('vid')">▷ Face Video <span style="font-size:9px;background:#4ade8022;color:#4ade80;padding:1px 5px;border-radius:5px;margin-left:2px">NEW</span></button>
     <div class="sb-bottom">
       <div class="mode-pill demo" id="modePill"><span class="mode-dot"></span><span id="modeText">Demo mode</span></div>
       <button class="nav-btn" onclick="openSettings()">⚙ Settings</button>
       <a href="/logout" class="nav-btn" style="color:var(--red);text-decoration:none">⏻ Sign out</a>
-      <div class="usage-note">Mia Studio v5.0</div>
+      <div class="usage-note">Mia Studio v5.1</div>
     </div>
   </aside>
+
   <div class="main" id="mainArea">
+
+    <!-- GENERATE TAB -->
     <div id="tab-gen" style="display:flex;flex:1;overflow:hidden">
       <div class="controls">
         <div class="lbl">Describe your image</div>
@@ -183,15 +218,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
         </div>
         <select class="model-selector" id="modelSelect" onchange="switchModel(this.value)">
           <option value="minimax">MiniMax image-01 ($20/mo)</option>
-          <option value="flux-schnell">Flux Schnell — Replicate (fast, free tier)</option>
-          <option value="flux-pro">Flux 1.1 Pro — Replicate (best quality)</option>
-          <option value="novita">NovitaAI — Uncensored SD (adult)</option>
-          <option value="custom">Custom model...</option>
+          <option value="novita">NovitaAI — Uncensored SD</option>
+          <option value="flux-schnell">Flux Schnell — Replicate</option>
+          <option value="flux-pro">Flux 1.1 Pro — Replicate</option>
         </select>
-        <div style="font-size:11px;color:var(--text3);padding:6px 2px;">API keys are managed in ⚙ Settings</div>
-
+        <div style="font-size:11px;color:var(--text3);padding:6px 2px;">API keys managed in ⚙ Settings</div>
         <div id="demoBanner" style="display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:9px;background:#f59e0b11;border:1px solid #f59e0b22;font-size:12px;color:#f59e0b">
-          ⚡ Demo mode — <button onclick="openSettings()" style="background:none;border:none;color:#f59e0b;text-decoration:underline;font-size:12px;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif">Add MiniMax key</button>
+          ⚡ Demo mode — <button onclick="openSettings()" style="background:none;border:none;color:#f59e0b;text-decoration:underline;font-size:12px;cursor:pointer;padding:0;font-family:'DM Sans',sans-serif">Add API key</button>
         </div>
       </div>
       <div class="output">
@@ -207,6 +240,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
         </div>
       </div>
     </div>
+
+    <!-- LIBRARY TAB -->
     <div id="tab-lib" style="display:none;flex:1;overflow:hidden">
       <div class="tab-content">
         <div class="tab-head">
@@ -217,238 +252,407 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM San
         <div class="lib-grid" id="libGrid" style="display:none"></div>
       </div>
     </div>
+
+    <!-- VIDEO TAB -->
+    <div id="tab-vid" style="display:none;flex:1;overflow:hidden">
+      <div class="video-layout">
+
+        <!-- VIDEO CONTROLS -->
+        <div class="video-controls">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:4px">Face Video</div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5">Put your face on a funny video template. Upload a photo, pick a scene, generate.</div>
+
+          <div class="step-row"><div class="step-badge">1</div><span>Upload your face photo</span></div>
+          <div id="vidFaceUploadWrap" class="vid-face-area">
+            <input type="file" accept="image/*" onchange="lockVidFace(this)" id="vidFaceInput"/>
+            <div style="font-size:22px;margin-bottom:6px">📸</div>
+            <div style="font-size:13px;color:var(--text2)">Upload face photo</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px">Clear, front-facing works best</div>
+          </div>
+          <div id="vidFacePreview" style="display:none" class="vid-face-preview">
+            <img id="vidFaceImg"/>
+            <div class="vid-face-bar">
+              <span style="font-size:11px;color:var(--green)">✓ Face ready</span>
+              <button onclick="clearVidFace()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;">✕</button>
+            </div>
+          </div>
+
+          <div class="step-row" style="margin-top:4px"><div class="step-badge">2</div><span>Pick a funny template</span></div>
+          <div class="template-grid" id="templateGrid"></div>
+
+          <div class="step-row" style="margin-top:4px"><div class="step-badge">3</div><span>Generate your video</span></div>
+          <button class="gen-btn" id="vidGenBtn" onclick="generateVideo()" style="background:linear-gradient(135deg,#7c6dfa,#a594ff)">
+            ▷ Generate Face Video
+          </button>
+
+          <div class="novita-note">
+            Uses NovitaAI <strong>video-merge-face</strong> API. Requires your NovitaAI key in ⚙ Settings. ~$0.05–0.15 per video. Processing takes 30–90 seconds.
+          </div>
+        </div>
+
+        <!-- VIDEO OUTPUT -->
+        <div class="video-output">
+          <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text2)">Result</div>
+
+          <div id="vidPlaceholder" class="vid-placeholder">
+            <div class="vid-placeholder-icon">▷</div>
+            <div>Select a template and upload your face<br>to generate a video</div>
+          </div>
+
+          <div id="vidProgress" style="display:none;flex-direction:column;gap:10px">
+            <div style="font-size:13px;color:var(--text2);text-align:center" id="vidProgressLabel">Uploading template video...</div>
+            <div class="progress-wrap"><div class="progress-bar" id="vidProgressBar"></div></div>
+            <div style="font-size:11px;color:var(--text3);text-align:center">This takes 30–90 seconds. Hang tight!</div>
+          </div>
+
+          <div id="vidResult" style="display:none">
+            <div class="video-result">
+              <video id="vidResultVideo" controls playsinline loop></video>
+              <div class="video-result-bar">
+                <span id="vidResultLabel">Face video generated ✓</span>
+                <a id="vidDownloadBtn" href="#" download="mia-face-video.mp4">↓ Download</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- TEMPLATE PREVIEW -->
+          <div id="vidTemplatePreview" style="display:none;flex-direction:column;gap:8px">
+            <div style="font-size:12px;color:var(--text3)">SELECTED TEMPLATE</div>
+            <video id="vidPreviewVideo" autoplay loop muted playsinline style="width:100%;max-width:300px;border-radius:10px;border:1px solid var(--border2)"></video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+
 <script>
+// ── TEMPLATES ──────────────────────────────────────────────────
+// Using free Pexels stock videos via direct CDN links
+const TEMPLATES = [
+  {
+    id: 'dance1',
+    label: '💃 Party Dance',
+    emoji: '💃',
+    desc: 'Woman dancing at a party',
+    // We use a publicly accessible sample video URL
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4', // placeholder — replace with real Pexels URLs
+    color: '#ff6b9d'
+  },
+  {
+    id: 'silly1',
+    label: '😂 Silly Walk',
+    emoji: '🚶',
+    desc: 'Funny silly walk',
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    color: '#f59e0b'
+  },
+  {
+    id: 'react1',
+    label: '😱 Shocked Reaction',
+    emoji: '😱',
+    desc: 'Dramatic shocked reaction',
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    color: '#7c6dfa'
+  },
+  {
+    id: 'dance2',
+    label: '🕺 TikTok Dance',
+    emoji: '🕺',
+    desc: 'Viral TikTok dance move',
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    color: '#4ade80'
+  },
+  {
+    id: 'laugh1',
+    label: '🤣 Laughing Fit',
+    emoji: '🤣',
+    desc: 'Can\'t stop laughing',
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    color: '#30c8f0'
+  },
+  {
+    id: 'run1',
+    label: '🏃 Running Late',
+    emoji: '🏃',
+    desc: 'Frantically running',
+    videoUrl: 'https://www.w3schools.com/html/mov_bbb.mp4',
+    color: '#f87171'
+  },
+];
+
+// ── STATE ──────────────────────────────────────────────────────
 const DEMO_IMGS=["https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&q=80","https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80","https://images.unsplash.com/photo-1504703395950-b89145a5425b?w=400&q=80","https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=400&q=80","https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80","https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&q=80","https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=400&q=80","https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=400&q=80"];
 const STYLES=['Photorealistic','Cinematic','Editorial','Artistic','Fashion','Street'];
 const RATIOS=['1:1','4:5','9:16','16:9'];
 const STYLE_PROMPTS={'Photorealistic':'candid iphone photo, natural light, real life, no filters, authentic','Cinematic':'cinematic shot, moody atmospheric lighting, film grain, movie still','Editorial':'editorial fashion, studio lighting, magazine quality','Artistic':'artistic composition, vibrant colors, creative framing','Fashion':'fashion photography, stylish outfit, trendy lifestyle','Street':'street photography, urban, candid, documentary style'};
 let apiKey=localStorage.getItem('mia_api_key')||'';
 let miaFace=localStorage.getItem('mia_face')||'';
+let vidFace='';
+let selectedTemplate=null;
 let style='Photorealistic',ratio='9:16';
 let library=JSON.parse(localStorage.getItem('mia_library')||'[]');
 let generating=false,demoIdx=0;
+let currentModel=localStorage.getItem('mia_model')||'minimax';
 const generatedUrls={};
+let novitaKey='';
 
-// MODEL MANAGEMENT
-const MODELS = {
-  'minimax': {
-    name: 'MiniMax',
-    keyName: 'mia_api_key',
-    placeholder: 'sk-xxxxxxxxxxxxxxxx',
-    info: 'MiniMax image-01 — requires $20/mo plan'
-  },
-  'flux-schnell': {
-    name: 'Flux Schnell',
-    keyName: 'replicate_key_schnell',
-    placeholder: 'r8_xxxxxxxxxxxxxxxxxxxx',
-    info: 'Fast generations, ~$0.003/image'
-  },
-  'flux-pro': {
-    name: 'Flux 1.1 Pro',
-    keyName: 'replicate_key_pro',
-    placeholder: 'r8_xxxxxxxxxxxxxxxxxxxx',
-    info: 'Best quality, ~$0.04/image'
-  },
-  'novita': {
-    name: 'NovitaAI',
-    keyName: 'novita_key',
-    placeholder: 'novita_xxxxxxxxxxxxxxxx',
-    info: 'Uncensored Stable Diffusion — adult content allowed'
-  },
-  'custom': {
-    name: 'Custom',
-    keyName: 'custom_key',
-    placeholder: 'Your API key...',
-    info: 'Custom model endpoint'
-  }
+// ── TEMPLATE GRID ──────────────────────────────────────────────
+function renderTemplates(){
+  const grid=document.getElementById('templateGrid');
+  grid.innerHTML='';
+  TEMPLATES.forEach(t=>{
+    const card=document.createElement('div');
+    card.className='template-card'+(selectedTemplate===t.id?' selected':'');
+    card.onclick=()=>selectTemplate(t.id);
+    card.innerHTML=`
+      <div class="template-thumb-emoji" style="background:linear-gradient(135deg,${t.color}22,${t.color}11)">
+        <div style="font-size:36px">${t.emoji}</div>
+        <div style="font-size:10px;color:var(--text3)">${t.desc}</div>
+      </div>
+      <div class="template-label">${t.label}</div>
+      ${selectedTemplate===t.id?'<div class="template-selected-badge">✓</div>':''}
+    `;
+    grid.appendChild(card);
+  });
 }
 
-let currentModel = localStorage.getItem('mia_model') || 'minimax'
-
-function switchModel(model) {
-  currentModel = model
-  localStorage.setItem('mia_model', model)
-  const m = MODELS[model]
-  
-  // Update badge
-  document.getElementById('modelBadge').textContent = m.name
-  
-  // Show config panel
-  const config = document.getElementById('modelConfig')
-  config.style.display = 'block'
-  
-  // Load saved key for this model
-  const savedKey = localStorage.getItem(m.keyName) || ''
-  document.getElementById('modelApiKey').value = savedKey
-  document.getElementById('modelApiKey').placeholder = m.placeholder
-  
-  // Show endpoint field for custom
-  const epLabel = document.getElementById('modelEndpointLabel')
-  const ep = document.getElementById('modelEndpoint')
-  if (model === 'custom') {
-    epLabel.style.display = 'block'
-    ep.style.display = 'block'
-    ep.value = localStorage.getItem('custom_endpoint') || ''
-  } else {
-    epLabel.style.display = 'none'
-    ep.style.display = 'none'
+function selectTemplate(id){
+  selectedTemplate=id;
+  renderTemplates();
+  // Show preview
+  const t=TEMPLATES.find(x=>x.id===id);
+  if(t){
+    document.getElementById('vidTemplatePreview').style.display='flex';
+    document.getElementById('vidPreviewVideo').src=t.videoUrl;
+    document.getElementById('vidPlaceholder').style.display='none';
   }
-  
-  // Update global apiKey
-  apiKey = savedKey
-  updateMode()
-  if (model === 'novita') {
-    notify('NovitaAI selected — adult content enabled ✓')
-  } else {
-    notify(`Switched to ${m.name} ✓`)
-  }
+  notify(`Template selected: ${t?.label} ✓`);
 }
 
-function saveModelKey() {
-  const m = MODELS[currentModel]
-  const key = document.getElementById('modelApiKey').value.trim()
-  localStorage.setItem(m.keyName, key)
-  apiKey = key
-  if (currentModel === 'custom') {
-    localStorage.setItem('custom_endpoint', document.getElementById('modelEndpoint').value.trim())
+// ── VIDEO FACE ─────────────────────────────────────────────────
+function lockVidFace(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    vidFace=e.target.result;
+    document.getElementById('vidFaceUploadWrap').style.display='none';
+    document.getElementById('vidFacePreview').style.display='block';
+    document.getElementById('vidFaceImg').src=vidFace;
+    notify('Face photo ready ✓');
+  };
+  reader.readAsDataURL(file);
+}
+function clearVidFace(){
+  vidFace='';
+  document.getElementById('vidFaceInput').value='';
+  document.getElementById('vidFaceUploadWrap').style.display='block';
+  document.getElementById('vidFacePreview').style.display='none';
+}
+
+// ── SET PROGRESS ───────────────────────────────────────────────
+function setProgress(pct, label){
+  document.getElementById('vidProgressBar').style.width=pct+'%';
+  document.getElementById('vidProgressLabel').textContent=label;
+}
+
+// ── GENERATE VIDEO ─────────────────────────────────────────────
+async function generateVideo(){
+  if(!vidFace){ notify('Please upload a face photo first','err'); return; }
+  if(!selectedTemplate){ notify('Please select a template first','err'); return; }
+  if(!novitaKey){ notify('Add your NovitaAI key in ⚙ Settings first','err'); openSettings(); return; }
+
+  const t=TEMPLATES.find(x=>x.id===selectedTemplate);
+  const btn=document.getElementById('vidGenBtn');
+  btn.disabled=true;
+  btn.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
+
+  // Show progress
+  document.getElementById('vidPlaceholder').style.display='none';
+  document.getElementById('vidTemplatePreview').style.display='none';
+  document.getElementById('vidResult').style.display='none';
+  document.getElementById('vidProgress').style.display='flex';
+  setProgress(10, 'Preparing template video...');
+
+  try {
+    // Step 1 — Upload template video to get video_assets_id
+    setProgress(20, 'Uploading template to NovitaAI...');
+    const uploadRes = await fetch('/api/video-upload', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ videoUrl: t.videoUrl })
+    });
+    const uploadData = await uploadRes.json();
+    if(uploadData.error) throw new Error(uploadData.error);
+    const videoAssetsId = uploadData.video_assets_id;
+
+    setProgress(40, 'Starting face swap...');
+
+    // Step 2 — Start video-merge-face task
+    const faceB64 = vidFace.split(',')[1]; // strip data:image/...;base64,
+    const mergeRes = await fetch('/api/video-faceswap', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ video_assets_id: videoAssetsId, face_image_base64: faceB64 })
+    });
+    const mergeData = await mergeRes.json();
+    if(mergeData.error) throw new Error(mergeData.error);
+    const taskId = mergeData.task_id;
+
+    setProgress(55, 'Processing face swap... (this takes ~60 seconds)');
+
+    // Step 3 — Poll for result
+    let attempts=0;
+    let videoUrl=null;
+    while(attempts < 60){
+      await new Promise(r=>setTimeout(r,3000));
+      attempts++;
+      const pct = Math.min(55 + (attempts/60)*40, 95);
+      setProgress(pct, `Processing... (${attempts*3}s elapsed)`);
+
+      const pollRes = await fetch(`/api/video-result?task_id=${taskId}`);
+      const pollData = await pollRes.json();
+
+      if(pollData.status === 'TASK_STATUS_SUCCEED'){
+        videoUrl = pollData.video_url;
+        break;
+      }
+      if(pollData.status === 'TASK_STATUS_FAILED'){
+        throw new Error('Face swap failed — try a different photo or template');
+      }
+    }
+    if(!videoUrl) throw new Error('Timed out — NovitaAI took too long. Try again.');
+
+    // Step 4 — Show result
+    setProgress(100, 'Done!');
+    await new Promise(r=>setTimeout(r,500));
+    document.getElementById('vidProgress').style.display='none';
+    document.getElementById('vidResult').style.display='block';
+    document.getElementById('vidResultVideo').src=videoUrl;
+    document.getElementById('vidDownloadBtn').href=videoUrl;
+    document.getElementById('vidResultLabel').textContent=`${t.label} — face swap complete ✓`;
+    notify('Face video ready! ✓');
+
+  } catch(e){
+    document.getElementById('vidProgress').style.display='none';
+    document.getElementById('vidPlaceholder').style.display='flex';
+    document.getElementById('vidPlaceholder').innerHTML=`<div style="font-size:32px">⚠</div><div style="color:var(--red);font-size:13px">${e.message}</div>`;
+    notify(e.message, 'err');
   }
-  updateMode()
+
+  btn.disabled=false;
+  btn.innerHTML='▷ Generate Face Video';
 }
 
-function getApiKey() {
-  // Keys are stored server-side, return placeholder to indicate live mode
-  return apiKey || 'server-side'
-}
-
+// ── IMAGE GENERATION (unchanged) ──────────────────────────────
 function notify(msg,type='ok'){const el=document.getElementById('notif');el.textContent=msg;el.className=`notif ${type}`;el.style.display='block';setTimeout(()=>el.style.display='none',3000)}
 function updateMode(){const live=!!apiKey;document.getElementById('modePill').className='mode-pill '+(live?'live':'demo');document.getElementById('modeText').textContent=live?'Live mode':'Demo mode';document.getElementById('demoBanner').style.display=live?'none':'flex'}
 function openSettings(){
-  // Load current keys from server into modal
   fetch('/api/me').then(r=>r.json()).then(user=>{
-    const mk = document.getElementById('minimaxKeyInput')
-    const nk = document.getElementById('novitaKeyInput')
-    if(mk) mk.value = user.minimax_key || ''
-    if(nk) nk.value = user.novita_key || ''
-  }).catch(()=>{})
-  document.getElementById('settingsModal').style.display='flex'
+    if(document.getElementById('minimaxKeyInput')) document.getElementById('minimaxKeyInput').value=user.minimax_key||'';
+    if(document.getElementById('novitaKeyInput')) document.getElementById('novitaKeyInput').value=user.novita_key||'';
+  }).catch(()=>{});
+  document.getElementById('settingsModal').style.display='flex';
 }
 function closeModal(id){document.getElementById(id).style.display='none'}
 async function saveKey(){
-  const minimaxKey = document.getElementById('minimaxKeyInput')?.value?.trim() || ''
-  const novitaKey = document.getElementById('novitaKeyInput')?.value?.trim() || ''
-  await fetch('/api/keys', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({minimax_key:minimaxKey,novita_key:novitaKey})})
-  apiKey = minimaxKey || novitaKey
-  localStorage.setItem('mia_api_key', apiKey)
-  closeModal('settingsModal')
-  updateMode()
-  notify('API keys saved ✓')
+  const minimaxKey=document.getElementById('minimaxKeyInput')?.value?.trim()||'';
+  const nk=document.getElementById('novitaKeyInput')?.value?.trim()||'';
+  await fetch('/api/keys',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({minimax_key:minimaxKey,novita_key:nk})});
+  apiKey=minimaxKey||nk;
+  novitaKey=nk;
+  localStorage.setItem('mia_api_key',apiKey);
+  closeModal('settingsModal');
+  updateMode();
+  notify('API keys saved ✓');
 }
-function lockFace(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{miaFace=e.target.result;localStorage.setItem('mia_face',miaFace);updateFaceUI();notify("Mia's face locked! ✓")};reader.readAsDataURL(file)}
-function clearFace(){miaFace='';localStorage.removeItem('mia_face');document.getElementById('faceFileInput').value='';updateFaceUI();notify('Face lock cleared')}
+function lockFace(input){const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{miaFace=e.target.result;localStorage.setItem('mia_face',miaFace);updateFaceUI();notify("Face locked! ✓")};reader.readAsDataURL(file)}
+function clearFace(){miaFace='';localStorage.removeItem('mia_face');document.getElementById('faceFileInput').value='';updateFaceUI()}
 function updateFaceUI(){const show=!!miaFace;document.getElementById('faceUploadWrap').style.display=show?'none':'block';document.getElementById('facePreviewWrap').style.display=show?'block':'none';if(show)document.getElementById('facePreviewImg').src=miaFace;document.getElementById('faceBadge').style.display=show?'inline-block':'none';document.getElementById('faceOutBadge').style.display=show?'inline-block':'none'}
-function showTab(t){document.getElementById('tab-gen').style.display=t==='gen'?'flex':'none';document.getElementById('tab-lib').style.display=t==='lib'?'flex':'none';document.getElementById('nb-gen').classList.toggle('active',t==='gen');document.getElementById('nb-lib').classList.toggle('active',t==='lib');if(t==='lib')renderLibrary()}
+function showTab(t){
+  ['gen','lib','vid'].forEach(id=>{
+    document.getElementById(`tab-${id}`).style.display='none';
+    document.getElementById(`nb-${id}`).classList.remove('active');
+  });
+  document.getElementById(`tab-${t}`).style.display='flex';
+  document.getElementById(`nb-${t}`).classList.add('active');
+  if(t==='lib') renderLibrary();
+  if(t==='vid') renderTemplates();
+}
 function setSpinning(){const grid=document.getElementById('imgGrid');grid.innerHTML='';for(let i=0;i<4;i++){const s=document.createElement('div');s.className='img-slot';s.innerHTML='<div class="spinner"><span></span><span></span><span></span></div>';grid.appendChild(s)}}
 function fillSlotFull(idx,url,promptText){generatedUrls[idx]=url;const slots=document.getElementById('imgGrid').querySelectorAll('.img-slot');if(!slots[idx])return;slots[idx].className='img-slot loaded';slots[idx].innerHTML=`<img src="${url}" alt="Generated ${idx+1}"/><div class="img-hover"><button onclick="saveToLib(${idx},'${promptText.replace(/'/g,"\\'").substring(0,40)}')">♡ Save</button><a href="${url}" download="mia-${Date.now()}.jpg">↓ Download</a></div>`}
 function saveToLib(idx,promptText){const url=generatedUrls[idx];if(!url)return;library.unshift({id:Date.now(),url,prompt:promptText,style});localStorage.setItem('mia_library',JSON.stringify(library));notify('Saved to library ✓')}
 function renderLibrary(){const empty=document.getElementById('libEmpty');const grid=document.getElementById('libGrid');document.getElementById('libCount').textContent=library.length+' images';if(library.length===0){empty.style.display='flex';grid.style.display='none';return}empty.style.display='none';grid.style.display='grid';grid.innerHTML='';library.forEach(item=>{const el=document.createElement('div');el.className='lib-item';el.innerHTML=`<img src="${item.url}" alt="${item.prompt}" loading="lazy"/><div class="lib-hover"><div class="lib-prompt">${item.prompt}</div><div class="lib-actions"><a href="${item.url}" download>↓</a><button onclick="removeLib(${item.id})">✕</button></div></div>`;grid.appendChild(el)})}
 function removeLib(id){library=library.filter(l=>l.id!==id);localStorage.setItem('mia_library',JSON.stringify(library));renderLibrary()}
 
-async function callMiniMax(prompt){
-  const key = getApiKey()
-  if (!key) throw new Error('No API key — click the model config above')
-  
-  if (currentModel === 'minimax' || currentModel === 'novita') {
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({prompt, model: currentModel, ratio, faceUrl: miaFace || '', aspectRatio: ratio})
-    })
-    const data = await res.json()
-    if (data.error) throw new Error(data.error)
-    if (!data.url) throw new Error('No image returned')
-    return data.url
-  }
-  
-  if (currentModel === 'flux-schnell' || currentModel === 'flux-pro') {
-    const modelPath = currentModel === 'flux-schnell' 
-      ? 'black-forest-labs/flux-schnell'
-      : 'black-forest-labs/flux-1.1-pro'
-    const res = await fetch(`https://api.replicate.com/v1/models/${modelPath}/predictions`, {
-      method:'POST',
-      headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json','Prefer':'wait'},
-      body:JSON.stringify({input:{prompt, num_outputs:1, output_format:'jpg'}})
-    });
-    const data = await res.json();
-    if (Array.isArray(data.output)) return data.output[0];
-    if (typeof data.output === 'string') return data.output;
-    throw new Error(data.detail || 'Replicate error — note: browser CORS may block this');
-  }
-  
+function switchModel(model){currentModel=model;localStorage.setItem('mia_model',model);document.getElementById('modelBadge').textContent=model==='minimax'?'MiniMax':model==='novita'?'NovitaAI':model==='flux-schnell'?'Flux Schnell':'Flux Pro';notify(`Switched to ${currentModel} ✓`)}
 
-
-  if (currentModel === 'custom') {
-    const endpoint = localStorage.getItem('custom_endpoint')
-    if (!endpoint) throw new Error('Set your custom endpoint URL above')
-    const res = await fetch(endpoint, {
-      method:'POST',
-      headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json'},
-      body:JSON.stringify({prompt, key})
-    });
-    const data = await res.json();
-    if (data.output) return Array.isArray(data.output) ? data.output[0] : data.output;
-    throw new Error('No image from custom endpoint');
+async function callApi(prompt){
+  if(currentModel==='minimax'||currentModel==='novita'){
+    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,model:currentModel,ratio,faceUrl:miaFace||''})});
+    const data=await res.json();
+    if(data.error) throw new Error(data.error);
+    if(!data.url) throw new Error('No image returned');
+    return data.url;
+  }
+  if(currentModel==='flux-schnell'||currentModel==='flux-pro'){
+    const key=localStorage.getItem(currentModel==='flux-schnell'?'replicate_key_schnell':'replicate_key_pro')||'';
+    if(!key) throw new Error('Add Replicate key in Settings');
+    const modelPath=currentModel==='flux-schnell'?'black-forest-labs/flux-schnell':'black-forest-labs/flux-1.1-pro';
+    const res=await fetch(`https://api.replicate.com/v1/models/${modelPath}/predictions`,{method:'POST',headers:{'Authorization':`Bearer ${key}`,'Content-Type':'application/json','Prefer':'wait'},body:JSON.stringify({input:{prompt,num_outputs:1,output_format:'jpg'}})});
+    const data=await res.json();
+    if(Array.isArray(data.output)) return data.output[0];
+    if(typeof data.output==='string') return data.output;
+    throw new Error(data.detail||'Replicate error');
   }
 }
 
 async function generate(){
   const prompt=document.getElementById('prompt').value.trim();
-  if(!prompt||generating)return;
+  if(!prompt||generating) return;
   generating=true;
   const btn=document.getElementById('genBtn');
-  btn.disabled=true;
-  btn.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
+  btn.disabled=true;btn.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
   setSpinning();
   const currentPrompt=prompt;
   if(!apiKey){
     await new Promise(r=>setTimeout(r,1800));
-    [0,1,2,3].forEach(i=>{const url=DEMO_IMGS[(demoIdx+i)%DEMO_IMGS.length];fillSlotFull(i,url,currentPrompt)});
+    [0,1,2,3].forEach(i=>{fillSlotFull(i,DEMO_IMGS[(demoIdx+i)%DEMO_IMGS.length],currentPrompt)});
     demoIdx=(demoIdx+4)%DEMO_IMGS.length;
   } else {
     const fullPrompt=`${currentPrompt}, ${STYLE_PROMPTS[style]||STYLE_PROMPTS['Photorealistic']}`;
-    // Generate sequentially with small delay to avoid rate limits
     for(let idx=0;idx<4;idx++){
       try{
         if(idx>0) await new Promise(r=>setTimeout(r,500));
-        const url=await callMiniMax(fullPrompt);
+        const url=await callApi(fullPrompt);
         fillSlotFull(idx,url,currentPrompt);
       } catch(e){
         const slots=document.getElementById('imgGrid').querySelectorAll('.img-slot');
-        if(slots[idx])slots[idx].innerHTML=`<div style="font-size:11px;color:var(--red);padding:10px;text-align:center">${e.message}</div>`;
+        if(slots[idx]) slots[idx].innerHTML=`<div style="font-size:11px;color:var(--red);padding:10px;text-align:center">${e.message}</div>`;
       }
     }
   }
   generating=false;btn.disabled=false;btn.innerHTML='Generate 4 images';
 }
 
-const STYLE_TIPS={'Photorealistic':'Real iPhone photo look. Natural light, candid, no filters.','Cinematic':'Moody film quality. Like a movie still. Great for dramatic looks.','Editorial':'High fashion magazine style. Polished and professional.','Artistic':'Creative and expressive. Bold colors, unique compositions.','Fashion':'Trendy lifestyle shots. Stylish outfits, aspirational feel.','Street':'Urban candid photography. Gritty, real, city life vibes.'};
+// Init
 const sg=document.getElementById('styleGrid');
-STYLES.forEach(s=>{const b=document.createElement('button');b.className='style-btn'+(s===style?' on':'');b.textContent=s;b.title=STYLE_TIPS[s]||'';b.onclick=()=>{style=s;document.querySelectorAll('.style-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on')};sg.appendChild(b);});
+STYLES.forEach(s=>{const b=document.createElement('button');b.className='style-btn'+(s===style?' on':'');b.textContent=s;b.onclick=()=>{style=s;document.querySelectorAll('.style-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on')};sg.appendChild(b)});
 const rr=document.getElementById('ratioRow');
 RATIOS.forEach(r=>{const b=document.createElement('button');b.className='ratio-btn'+(r===ratio?' on':'');b.textContent=r;b.onclick=()=>{ratio=r;document.querySelectorAll('.ratio-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on')};rr.appendChild(b)});
 document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')generate()});
 document.addEventListener('click',e=>{if(e.target.id==='settingsModal')closeModal('settingsModal')});
-// Init model selector
-// Load keys from server
+
 fetch('/api/me').then(r=>r.json()).then(user=>{
-  if(user.minimax_key) { apiKey = user.minimax_key; localStorage.setItem('mia_api_key', apiKey) }
-  if(document.getElementById('minimaxKeyInput')) document.getElementById('minimaxKeyInput').value = user.minimax_key || ''
-  if(document.getElementById('novitaKeyInput')) document.getElementById('novitaKeyInput').value = user.novita_key || ''
-  updateMode()
-}).catch(()=>{})
-document.getElementById('modelSelect').value = currentModel
-switchModel(currentModel)
+  if(user.minimax_key){apiKey=user.minimax_key;localStorage.setItem('mia_api_key',apiKey)}
+  if(user.novita_key) novitaKey=user.novita_key;
+  updateMode();
+}).catch(()=>{});
+
+document.getElementById('modelSelect').value=currentModel;
+switchModel(currentModel);
 updateMode();updateFaceUI();
 </script>
 </body>
