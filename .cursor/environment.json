@@ -1,0 +1,17 @@
+{
+  "name": "Mia Studio",
+  "install": "npm install",
+  "terminals": [
+    {
+      "name": "server",
+      "command": "node server.js",
+      "description": "Mia Studio Express server (SQLite-backed auth + AI image/video studio). Serves http://localhost:3000."
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 3000
+    }
+  ]
+}
