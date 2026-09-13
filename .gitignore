@@ -1,0 +1,10 @@
+node_modules/
+.env
+.DS_Store
+*.log
+
+# Local SQLite database (created at runtime)
+mia.db
+mia.db-journal
+mia.db-wal
+mia.db-shm
