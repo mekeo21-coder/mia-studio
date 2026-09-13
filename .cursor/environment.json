@@ -1,17 +1,26 @@
 {
-  "name": "Mia Studio",
-  "install": "npm install",
+  "name": "Mia Studio + REKW Stocks",
+  "install": "cd /agent/repos/mia-studio && npm install\nif [ -d /agent/repos/Stonks ]; then cd /agent/repos/Stonks && npm install; fi",
   "terminals": [
     {
-      "name": "server",
-      "command": "node server.js",
+      "name": "mia-studio",
+      "command": "cd /agent/repos/mia-studio && node server.js",
       "description": "Mia Studio Express app (auth + AI image/video studio). Serves on http://localhost:3000."
+    },
+    {
+      "name": "stonks",
+      "command": "cd /agent/repos/Stonks && PORT=3001 node server.js",
+      "description": "REKW Stocks live market dashboard. Serves on http://localhost:3001."
     }
   ],
   "ports": [
     {
-      "name": "web",
+      "name": "mia-studio",
       "port": 3000
+    },
+    {
+      "name": "stonks",
+      "port": 3001
     }
   ]
 }
